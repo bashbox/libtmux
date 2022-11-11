@@ -1,4 +1,13 @@
-function tmux::create_session() {
-	tmux new-session -n home -ds "$TMUX_SESSION_NAME" "$@" #\; send-keys -t ":${session_name}" "cat $HOME/.dotfiles.log" Enter 2>/dev/null ||:;
-	# tmux_default_shell="$(tmux display -p '#{default-shell}')";
+use std::native::sleep;
+
+function tmux::new-session() {
+  declare +x WINDOW_NAME SESSION_NAME;
+	tmux new-session -n "${WINDOW_NAME:-home}" -ds "$SESSION_NAME" "$@";
 }
+
+function await::until_tmux_has-session {
+  until tmux has-session 2>/dev/null; do {
+    sleep 0.5;
+  } done
+}
+
