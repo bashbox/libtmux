@@ -11,3 +11,18 @@ function tmux::show-option() {
 	} fi
 }
 
+function tmux::chain-cmds() {
+  declare -a cmds;
+  declare cmd stdin;
+
+  IFS= read -t0.01 -u0 -r -d '' stdin || :;
+
+  while read -r cmd; do {
+    if ! [[ "$cmd" =~ ^\# ]] && test -n "${cmd:-}"; then {
+      eval "cmds+=(${cmd} ';')"
+    } fi
+  } done <<<"$stdin"
+
+  tmux "${cmds[@]}"
+}
+
